@@ -29,9 +29,13 @@
 ## 环境信息
 
 - Obsidian 1.13.7，安装于 `/Applications/Obsidian.app`
-- 该机器可访问的域名不含 `github.com`、`raw.githubusercontent.com`（CONNECT 返回 502 / 000），但 `api.github.com`、`*.githubusercontent.com`、`ghcr.io`、`formulae.brew.sh` 可达
-  - 国内镜像可达：`mirrors.ustc.edu.cn` / `mirrors.tuna.tsinghua.edu.cn` / `mirrors.cloud.tencent.com` / `mirrors.aliyun.com`（已验证 USTC 的 `brew.git` 可 `git ls-remote`）
-  - 若需安装 Homebrew，**标准安装脚本会卡在 `git clone github.com/Homebrew/brew` 这一步**，必须走国内镜像
+- ⚠️ **网络可达性会波动，用前必须实测，不要依赖历史结论**。注意：`curl -sI` 探测裸域名偶尔会误报，带真实路径测更可靠
+  - 2026-09-13 晚实测：`github.com` 200 ✅、`codeload.github.com` 301 ✅、`api.github.com` 200 ✅、`ghcr.io` 301 ✅、`formulae.brew.sh` 200 ✅
+  - **`raw.githubusercontent.com` 两次实测均为 000 ❌**，是本机唯一稳定不通的 GitHub 域名
+  - 2026-09-11 曾出现 `github.com` 返回 502 / 000，属**临时**拦截，同日即恢复 —— 不要据此下长期结论
+  - GitHub 的 git 操作已实测可行：`git ls-remote https://github.com/Homebrew/brew` 成功返回 commit 哈希
+  - 国内镜像可达：USTC / 清华 TUNA / 腾讯云 / 阿里云
+- Homebrew 安装注意：官方脚本（`raw.githubusercontent.com/Homebrew/install/HEAD/install.sh`）**下载不到**，但因 `github.com` 可用，可改为手动 `git clone https://github.com/Homebrew/brew` 完成安装
 - Git `2.50.1 (Apple Git-155)`，随 Xcode CLT 提供（`/usr/bin/git`），无 Homebrew
   - 系统级已配 `credential.helper=osxkeychain`、`init.defaultBranch=main`
   - 用户级身份需配置（`~/.gitconfig`）
