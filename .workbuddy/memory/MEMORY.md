@@ -51,4 +51,5 @@ Git 已按域名配好代理，日常 `git push/pull` 无需额外设置。
 
 - 位置：`/Users/wenjuxu/AI_Study/知识库`，分支 `main`
 - 远程：`https://github.com/ZiqianStars/knowledge-vault.git`（HTTPS，走 Clash 代理）
-- 认证：Personal Access Token，由 `osxkeychain` 记住凭据
+- 认证：Personal Access Token，已存入 `osxkeychain`（`acct=ZiqianStars`），推送免密
+- 状态：已推送并与远端同步（2026-09-13 验证）
