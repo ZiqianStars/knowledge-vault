@@ -29,13 +29,26 @@
 ## 环境信息
 
 - Obsidian 1.13.7，安装于 `/Applications/Obsidian.app`
-- ⚠️ **网络可达性会波动，用前必须实测，不要依赖历史结论**。注意：`curl -sI` 探测裸域名偶尔会误报，带真实路径测更可靠
-  - 2026-09-13 晚实测：`github.com` 200 ✅、`codeload.github.com` 301 ✅、`api.github.com` 200 ✅、`ghcr.io` 301 ✅、`formulae.brew.sh` 200 ✅
-  - **`raw.githubusercontent.com` 两次实测均为 000 ❌**，是本机唯一稳定不通的 GitHub 域名
-  - 2026-09-11 曾出现 `github.com` 返回 502 / 000，属**临时**拦截，同日即恢复 —— 不要据此下长期结论
-  - GitHub 的 git 操作已实测可行：`git ls-remote https://github.com/Homebrew/brew` 成功返回 commit 哈希
-  - 国内镜像可达：USTC / 清华 TUNA / 腾讯云 / 阿里云
-- Homebrew 安装注意：官方脚本（`raw.githubusercontent.com/Homebrew/install/HEAD/install.sh`）**下载不到**，但因 `github.com` 可用，可改为手动 `git clone https://github.com/Homebrew/brew` 完成安装
 - Git `2.50.1 (Apple Git-155)`，随 Xcode CLT 提供（`/usr/bin/git`），无 Homebrew
   - 系统级已配 `credential.helper=osxkeychain`、`init.defaultBranch=main`
-  - 用户级身份需配置（`~/.gitconfig`）
+  - 用户级身份：`ZiqianStars` / `64132382+ZiqianStars@users.noreply.github.com`
+  - 全局代理：`http.https://github.com.proxy = http://127.0.0.1:33210`
+
+### 网络：命令行必须显式走代理（重要）
+
+⚠️ **本机外网出口依赖「艾可云」(Clash) 系统代理** —— HTTP `127.0.0.1:33210`、SOCKS `33211`。而 **`curl` / `git` 不会自动读取 macOS 系统代理**，不走代理时表现为 `000` 或 `CONNECT tunnel failed 502`，极易误判成「该域名不可达」。
+
+走代理后**全部 GitHub 域名均可达**，包括此前被误判为「稳定不通」的 `raw.githubusercontent.com`。
+
+```bash
+networksetup -getsecurewebproxy Wi-Fi    # 读代理端口
+curl --proxy http://127.0.0.1:33210 ...  # 显式走代理重测
+```
+
+Git 已按域名配好代理，日常 `git push/pull` 无需额外设置。
+
+## Git 仓库
+
+- 位置：`/Users/wenjuxu/AI_Study/知识库`，分支 `main`
+- 远程：`https://github.com/ZiqianStars/knowledge-vault.git`（HTTPS，走 Clash 代理）
+- 认证：Personal Access Token，由 `osxkeychain` 记住凭据
