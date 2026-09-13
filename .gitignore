@@ -1,0 +1,33 @@
+# ===== Obsidian =====
+# 界面状态：切换面板、滚动、开关文件都会改写它。
+# 这是最容易踩的坑 —— 不排除的话，每次提交都会带上它，
+# 真实的内容改动会被淹没在噪音里。
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+# Obsidian 的本地回收站（删除的笔记会先进这里）
+.trash/
+
+# 提示：日后若安装社区插件，.obsidian/plugins/*/data.json
+# 里可能存有 API Key、令牌等凭据。若要推送公开仓库，需单独检查。
+
+
+# ===== macOS =====
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+
+# ===== 编辑器 / 临时文件 =====
+*.tmp
+*.swp
+*~
+~$*
+.~lock.*
+
+
+# ===== WorkBuddy =====
+# 只排除运行时产物，保留 memory/ 下的项目笔记（那是内容，不是缓存）
+.workbuddy/*
+!.workbuddy/memory/
