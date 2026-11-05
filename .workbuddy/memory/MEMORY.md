@@ -36,16 +36,38 @@
 
 ### 网络：命令行必须显式走代理（重要）
 
-⚠️ **本机外网出口依赖「艾可云」(Clash) 系统代理** —— HTTP `127.0.0.1:33210`、SOCKS `33211`。而 **`curl` / `git` 不会自动读取 macOS 系统代理**，不走代理时表现为 `000` 或 `CONNECT tunnel failed 502`，极易误判成「该域名不可达」。
+⚠️ **本机外网出口依赖 Clash 系统代理**，但**端口会变，务必先实测**（2026-11-05 实测：旧记录的 33210 已失效，当前是 Clash Verge 的 `mixed-port` 7897）。
 
-走代理后**全部 GitHub 域名均可达**，包括此前被误判为「稳定不通」的 `raw.githubusercontent.com`。
+**实测流程（别凭记忆写端口）：**
 
 ```bash
-networksetup -getsecurewebproxy Wi-Fi    # 读代理端口
-curl --proxy http://127.0.0.1:33210 ...  # 显式走代理重测
+networksetup -getsecurewebproxy Wi-Fi    # 读系统代理配置里的端口
+nc -z -G 1 127.0.0.1 <port>              # 端口是否真的在监听
+curl --proxy http://127.0.0.1:<port> ...  # 显式走代理重测
 ```
 
+- `curl` / `git` **不读 macOS 系统代理**，不走代理表现为 `000` 或 `CONNECT 502`，极易误判成「该域名不可达」。
+- ⚠️ **Clash Verge 可能没在运行**：配置里写着 7897 但端口没监听时，先 `open -a "Clash Verge"` 再测。
+- ⚠️ **Clash Verge 首次启动 GLOBAL 组会选中「剩余流量：50 GB」**（订阅信息占位节点，不是真节点）→ 症状是 baidu 200、github/douyin 全 000，**极易误判为「域名不可达」**。
+  **修法**（控制器端口 = `mixed-port + 100`，无 secret）：
+  ```bash
+  curl -X PUT http://127.0.0.1:9097/proxies/GLOBAL \
+    -H "Content-Type: application/json" -d '{"name":"新加坡01aws"}'
+  ```
+  切到真实节点后 douyin / github / google 全部 200。
+- 走代理后**全部 GitHub 域名均可达**，包括此前被误判为「稳定不通」的 `raw.githubusercontent.com`。
+
 Git 已按域名配好代理，日常 `git push/pull` 无需额外设置。
+
+### 平台反爬与自动化（2026-11-05 抖音实测）
+
+- **抖音**：短链 → `www.iesdouyin.com/share/video/<aweme_id>` → `www.douyin.com/video/<aweme_id>`。
+  直连返回 JS VM 反爬壳；`aweme/detail` API 需 `a_bogus` 签名（与 cookie/UA 绑定，**外搬无效**）。
+  → **唯一可行路径是 bsk 浏览器自动化**，详见 `~/.workbuddy/skills/browser-skill`。
+- **视频 CDN 直链可绕过签名**：`document.querySelector('video').currentSrc` 拿到 `v*-webf.douyinvod.com` URL，
+  带 `Referer: https://www.douyin.com/` 即可 curl 下载。
+- **平台自带「章节要点」= 免费官方大纲**：长视频页面 DOM 里直接有 9 个章节标记 + 时间戳，**读 DOM 就有，不用 ASR**。
+
 
 ## Git 仓库
 
